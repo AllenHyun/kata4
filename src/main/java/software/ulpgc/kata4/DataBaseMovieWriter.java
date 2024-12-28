@@ -2,9 +2,10 @@ package software.ulpgc.kata4;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Parameter;
 import java.sql.*;
 import java.util.List;
+
+
 
 public class DataBaseMovieWriter implements MovieWriter, AutoCloseable {
     private final Connection connection;
@@ -27,15 +28,15 @@ public class DataBaseMovieWriter implements MovieWriter, AutoCloseable {
         this(connectionFor(file));
     }
 
-    public DataBaseMovieWriter(Connection connection) throws SQLException{
-        this.connection = connection;
+    public DataBaseMovieWriter(String connection) throws SQLException{
+        this.connection = DriverManager.getConnection(connection);
         this.connection.setAutoCommit(false);
         this.insertStatement = initDatabase(this.connection);
     }
 
     private PreparedStatement initDatabase(Connection connection) throws SQLException {
         Statement statement = connection.createStatement();
-        Statement.execute(CreateTableStatement);
+        statement.execute(CreateTableStatement);
         return connection.prepareStatement(InsertRecordStatement);
     }
 
@@ -48,7 +49,7 @@ public class DataBaseMovieWriter implements MovieWriter, AutoCloseable {
         try {
             updateInsertStatementWith(movie);
             insertStatement.execute();
-        } catch (IOException e){
+        } catch (SQLException e){
             throw new IOException(e.getMessage());
         }
     }
@@ -59,7 +60,7 @@ public class DataBaseMovieWriter implements MovieWriter, AutoCloseable {
         }
     }
 
-    private void updateInsertStatement(Parameter parameter) throws SQLException{
+    private void updateInsertStatementWith(Parameter parameter) throws SQLException{
         if(isNull(parameter.value)){
             insertStatement.setNull(parameter.id, parameter.type);
         }
