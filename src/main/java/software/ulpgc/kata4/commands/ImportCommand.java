@@ -1,4 +1,7 @@
-package software.ulpgc.kata4;
+package software.ulpgc.kata4.commands;
+
+import software.ulpgc.kata4.io.*;
+import software.ulpgc.kata4.model.Movie;
 
 import java.io.File;
 import java.io.IOException;
